@@ -303,6 +303,33 @@ export default function ExpenseScreen() {
         </View>
       )}
 
+      {/* Bar chart: categories descending (x = category, y = price) */}
+      {totalsByCategory.length > 0 && (
+        <View style={styles.chartCard}>
+          <Text style={styles.categoryHeader}>Spending by Category</Text>
+          <View style={styles.chartRowSimple}>
+            {(() => {
+              const max = totalsByCategory[0]?.amount || 1;
+              return totalsByCategory.map((t, i) => {
+                const h = Math.max(6, Math.round((t.amount / max) * 140));
+                const bg = (function getColor(cat) {
+                  const palette = ['#f97316','#3b82f6','#10b981','#8b5cf6','#ec4899','#06b6d4','#6b7280'];
+                  const idx = Math.abs(String(cat).split('').reduce((s,c)=>s+c.charCodeAt(0),0)) % palette.length;
+                  return palette[idx];
+                })(t.category);
+                return (
+                  <View key={t.category + i} style={styles.barColSimple}>
+                    <View style={[styles.barSimple, { height: h, backgroundColor: bg }]} />
+                    <Text style={styles.barLabelSimple} numberOfLines={1}>{t.category}</Text>
+                    <Text style={styles.barValueSimple}>${t.amount.toFixed(0)}</Text>
+                  </View>
+                );
+              });
+            })()}
+          </View>
+        </View>
+      )}
+
       
       <Modal visible={!!editingExpense} animationType="slide" transparent={true}>
         <View style={styles.modalContainer}>
@@ -503,4 +530,40 @@ export default function ExpenseScreen() {
   toastText: {
     color: '#e5e7eb',
   },
+  chartCard: {
+    marginTop: 8,
+    padding: 10,
+    backgroundColor: '#0b1220',
+    borderRadius: 8,
+  },
+  chartRowSimple: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'flex-start',
+    paddingTop: 8,
+    paddingBottom: 8,
+  },
+  barColSimple: {
+    width: 72,
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  barSimple: {
+    width: 28,
+    borderTopLeftRadius: 4,
+    borderTopRightRadius: 4,
+    marginBottom: 6,
+  },
+  barLabelSimple: {
+    color: '#e5e7eb',
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  barValueSimple: {
+    color: '#fbbf24',
+    fontSize: 12,
+    marginTop: 4,
+  },
 });
+
+
